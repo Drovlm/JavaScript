@@ -1,5 +1,5 @@
 body {
-  display: flex;
+  display: block;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -8,6 +8,8 @@ body {
 }
 
 .grid {
+  width: 1000px;
+  margin: auto;
   border: solid 20px rgb(14, 144, 250);
   position: relative;
   display: grid;
@@ -79,7 +81,11 @@ body {
     box-shadow: 0 0 5px 5px rgb(229, 221, 221);
   }
 }
-canvas {
-  position: absolute;
-  top: 5px;
+.blood {
+  display: flex;
+  width: 1000px;
+  margin: auto;
+  margin-bottom: 5px;
+  justify-content: center;
+  align-items: center;
 }

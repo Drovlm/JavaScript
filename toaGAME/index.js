@@ -6,7 +6,7 @@ const height = canvas.height = 30;
 
 let health = 100;
 const healthBarWidth = 500;
-const healthBarHeight = 50;
+const healthBarHeight = 25;
 const x = width / 2 - healthBarWidth / 2;
 const y = height / 2 - healthBarHeight / 2;
 
@@ -24,11 +24,6 @@ setInterval(function() {
       window.location.href = "index.html"; 
     }
   } ,1000);
-
-canvas.onclick = function() {
-  health -= 50;
-  healthBar.updateHealth(health);
-};
 
 
 frame();
