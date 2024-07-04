@@ -7,14 +7,15 @@ body {
   background-color: #b9e4ec;
 }
 
-.grid {
+.tile {
   width: 1000px;
   margin: auto;
   border: solid 20px rgb(14, 144, 250);
-  position: relative;
   display: grid;
   grid-template-columns: repeat(40, 25px);
   grid-template-rows: repeat(24, 25px);
+  position:relative;
+  bottom: 30px;
 }
 
 .cell {
@@ -81,11 +82,12 @@ body {
     box-shadow: 0 0 5px 5px rgb(229, 221, 221);
   }
 }
-.blood {
-  display: flex;
+.health {
+  display: flex;;
   width: 1000px;
   margin: auto;
-  margin-bottom: 5px;
   justify-content: center;
   align-items: center;
+  position:fixed;
+  top: 15px;
 }

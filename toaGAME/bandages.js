@@ -1,6 +1,6 @@
 let bandages = [];
 function addHeals() {
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 10; i++) {
     const bandage = document.createElement("div");
     bandage.className = "heals";
     bandage.style.backgroundImage = "url('images/heart.png')";

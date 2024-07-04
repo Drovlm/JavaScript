@@ -73,39 +73,53 @@ function addPlayer() {
     }
   });
 }
-
+let hasSword = false;
 function checkCollision() {
   const player = document.querySelector(".player");
   const playerTop = parseInt(player.style.top);
   const playerLeft = parseInt(player.style.left);
 
-/*EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE */
+  function isWithinOneBlock(pos1, pos2) {
+    return Math.abs(pos1 - pos2) <= cellSize;
+  }
 
-  for (const i in enemies) {
+  for (let i = 0; i < enemies.length; i++) {
     const enemy = enemies[i];
     const enemyTop = parseInt(enemy.style.top);
     const enemyLeft = parseInt(enemy.style.left);
-    document.addEventListener("keydown", (event) => {
-      switch (event.key) {
-        case "M":
-    if (playerTop === enemyTop && playerLeft === enemyLeft) {
-      health -= 30;
-      healthBar.updateHealth(health);
 
-      gridElement.removeChild(enemy);
-      enemies.splice(i, 1);
-    }}})
-      if (health == 10) {
-        health -= 10;
+    if (
+      isWithinOneBlock(playerTop, enemyTop) &&
+      isWithinOneBlock(playerLeft, enemyLeft)
+    ) {
+      if (hasSword) {
+        document.addEventListener("keydown", (event) => {
+          if (event.key === " ") {
+            gridElement.removeChild(enemy);
+            enemies.splice(i, 1);
+          }
+        });
+      } else {  if (playerTop === enemyTop && playerLeft === enemyLeft) {
+        if (hasSword) {
+          document.addEventListener("keydown", (event) => {
+            if (event.key === " ") {
+              gridElement.removeChild(enemy);
+              enemies.splice(i, 1);
+            }
+          });
+        } else {
+        health -= 30;
         healthBar.updateHealth(health);
-        alert("Game Over");
-        location.reload();
-        window.location.href = "index.html";
-      }
-    }
-  
+        gridElement.removeChild(enemy);
+        enemies.splice(i, 1);
+
+        if (health <= 10) {
+          health -= 10;
+          healthBar.updateHealth(health);
+        }
+      }}
+    }}
+  }
 
   for (const i in bandages) {
     const bandage = bandages[i];
@@ -117,7 +131,7 @@ EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE */
         health += 0;
         healthBar.updateHealth(health);
       } else {
-        health += 10;
+        health += 15;
         healthBar.updateHealth(health);
         gridElement.removeChild(bandage);
         bandages.splice(i, 1);
@@ -125,7 +139,7 @@ EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE */
     }
   }
 
-  for (const i in swords) {
+  for (let i = 0; i < swords.length; i++) {
     const sword = swords[i];
     const swordTop = parseInt(sword.style.top);
     const swordLeft = parseInt(sword.style.left);
@@ -133,49 +147,16 @@ EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE */
     if (playerTop === swordTop && playerLeft === swordLeft) {
       player.style.backgroundColor = "yellow";
       gridElement.removeChild(sword);
-      sword.splice(i, 1);
-   
-/*sssssssssssssssssssssssssssssssssssssssssssssssssssssssss
-SSSSSSSSSSSSSSSSSSSSSSSSSSSSS
-SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS */
-      for (const i in swords) {
-        const sword = swords[i];
-        const swordTop = parseInt(sword.style.top);
-        const swordLeft = parseInt(sword.style.left);
-    
-        if (playerTop === swordTop && playerLeft === swordLeft) {
-          player.style.backgroundColor = "yellow";
-          gridElement.removeChild(sword);
-          sword.splice(i, 1);
-        }
-      
-         
-          for (const i in enemies) {
-            const enemy = enemies[i];
-            const enemyTop = parseInt(enemy.style.top);
-            const enemyLeft = parseInt(enemy.style.left);
-            document.addEventListener("keydown", (event) => {
-              switch (event.key) {
-                case "L":
-            if (playerTop === enemyTop && playerLeft === enemyLeft) {
-            
-        
-              gridElement.removeChild(enemy);
-              enemies.splice(i, 1);
-            }}})
-              if (health == 10) {
-                health -= 10;
-                healthBar.updateHealth(health);
-                alert("Game Over");
-                location.reload();
-                window.location.href = "index.html";
-              }}
-    
-        }
-      
+      swords.splice(i, 1);
+      i--;
+      hasSword = true;
+      console.log("Has a sword:", hasSword);
 
-
-
+      setTimeout(() => {
+        hasSword = false;
+        player.style.backgroundColor = "black";
+        console.log("Has a sword:", hasSword);
+      }, 5000);
     }
   }
 }

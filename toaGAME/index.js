@@ -24,6 +24,16 @@ setInterval(function() {
       window.location.href = "index.html"; 
     }
   } ,1000);
-
+/*
+  setInterval(function() {
+    if (health <= 0) {
+      gameOverModal.style.display = 'block'; 
+      clearInterval(intervalId);
+      document.getElementById('restart-button').addEventListener('click', function() {
+        location.reload(); 
+      });
+    }
+  }, 1000);
+*/
 
 frame();

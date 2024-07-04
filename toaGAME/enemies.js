@@ -1,5 +1,5 @@
 function addEnemies() {
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 10; i++) {
     const enemy = document.createElement("div");
     enemy.className = "enemies";
     enemy.style.backgroundImage =

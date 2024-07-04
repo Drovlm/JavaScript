@@ -1,4 +1,4 @@
-const gridElement = document.querySelector(".grid");
+const gridElement = document.querySelector(".tile");
 const cellSize = 25;
 const imageSrcMap = {
   'w': 'images/wall2.jpg',
