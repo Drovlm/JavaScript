@@ -17,7 +17,7 @@ function addEnemies() {
     gridElement.appendChild(enemy);
 
     enemies.push(enemy);
-    /*moveRandomly(enemy);*/
+    moveRandomly(enemy);
   }
 }
 
