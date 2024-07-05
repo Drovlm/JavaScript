@@ -15,7 +15,7 @@ body {
   grid-template-columns: repeat(40, 25px);
   grid-template-rows: repeat(24, 25px);
   position:relative;
-  top: 50px;
+  top: 60px;
 }
 
 .cell {
