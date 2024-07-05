@@ -91,3 +91,15 @@ body {
   position:fixed;
   top: 15px;
 }
+
+.speaker {
+  color: rgb(20, 0, 0);
+  display: flex;;
+  width: 50px;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+  position:fixed;
+  top: 0px;
+  background-color: yellow;
+}

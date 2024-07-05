@@ -97,28 +97,47 @@ function checkCollision() {
           if (event.key === " ") {
             gridElement.removeChild(enemy);
             enemies.splice(i, 1);
+            var audio = new Audio("sounds/Sword-Effect.mp3");
+            audio.play();
           }
         });
-      } else {  if (playerTop === enemyTop && playerLeft === enemyLeft) {
-        if (hasSword) {
-          document.addEventListener("keydown", (event) => {
-            if (event.key === " ") {
-              gridElement.removeChild(enemy);
-              enemies.splice(i, 1);
-            }
-          });
-        } else {
-        health -= 30;
-        healthBar.updateHealth(health);
-        gridElement.removeChild(enemy);
-        enemies.splice(i, 1);
+      } else {
+        if (playerTop === enemyTop && playerLeft === enemyLeft) {
+          if (hasSword) {
+            document.addEventListener("keydown", (event) => {
+              if (event.key === " ") {
+                gridElement.removeChild(enemy);
+                enemies.splice(i, 2);
+              }
+            });
+          } else {
+            health -= 30;
+            healthBar.updateHealth(health);
+            gridElement.removeChild(enemy);
+            enemies.splice(i, 2);
+            var audio = new Audio("sounds/Dammeg.mp3");
+            audio.play();
+            dd;
+            enemies.splice(i, 2);
 
-        if (health <= 10) {
-          health -= 10;
-          healthBar.updateHealth(health);
+            if (health <= 10) {
+              health -= 10;
+              enemies.splice(i, 2);
+              var audio = new Audio("sounds/Died.mp3");
+              audio.play();
+              healthBar.updateHealth(health);
+            }
+            if (enemies <= 0) {
+              alert(
+                "Победа \nНажмите «ОК» и подождите, чтобы перезапустить игру. \nЕсли игра не загружается, нажмите еще раз."
+              );
+              location.reload();
+              window.location.href = "index.html";
+            }
+          }
         }
-      }}
-    }}
+      }
+    }
   }
 
   for (const i in bandages) {
@@ -134,6 +153,10 @@ function checkCollision() {
         health += 15;
         healthBar.updateHealth(health);
         gridElement.removeChild(bandage);
+        enemies.splice(i, 1);
+        var audio = new Audio("sounds/GetHeal.mp3");
+        audio.play();
+        audio.volume = 0.4;
         bandages.splice(i, 1);
       }
     }
@@ -148,7 +171,6 @@ function checkCollision() {
       player.style.backgroundColor = "yellow";
       gridElement.removeChild(sword);
       swords.splice(i, 1);
-      i--;
       hasSword = true;
       console.log("Has a sword:", hasSword);
 
@@ -156,7 +178,7 @@ function checkCollision() {
         hasSword = false;
         player.style.backgroundColor = "black";
         console.log("Has a sword:", hasSword);
-      }, 5000);
+      }, 8000);
     }
   }
 }
