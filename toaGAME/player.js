@@ -74,6 +74,7 @@ function addPlayer() {
   });
 }
 let hasSword = false;
+let swordTimeout = null; 
 function checkCollision() {
   const player = document.querySelector(".player");
   const playerTop = parseInt(player.style.top);
@@ -83,58 +84,51 @@ function checkCollision() {
     return Math.abs(pos1 - pos2) <= cellSize;
   }
 
+  
   for (let i = 0; i < enemies.length; i++) {
     const enemy = enemies[i];
     const enemyTop = parseInt(enemy.style.top);
     const enemyLeft = parseInt(enemy.style.left);
 
-    if (
-      isWithinOneBlock(playerTop, enemyTop) &&
-      isWithinOneBlock(playerLeft, enemyLeft)
-    ) {
-      if (hasSword) {
-        document.addEventListener("keydown", (event) => {
-          if (event.key === " ") {
-            gridElement.removeChild(enemy);
-            enemies.splice(i, 1);
-            var audio = new Audio("sounds/Sword-Effect.mp3");
-            audio.play();
-          }
-        });
-      } else {
-        if (playerTop === enemyTop && playerLeft === enemyLeft) {
-          if (hasSword) {
-            document.addEventListener("keydown", (event) => {
-              if (event.key === " ") {
-                gridElement.removeChild(enemy);
-                enemies.splice(i, 2);
-              }
-            });
-          } else {
-            health -= 30;
-            healthBar.updateHealth(health);
-            gridElement.removeChild(enemy);
-            enemies.splice(i, 2);
-            var audio = new Audio("sounds/Dammeg.mp3");
-            audio.play();
-            dd;
-            enemies.splice(i, 2);
+    if (isWithinOneBlock(playerTop, enemyTop) && isWithinOneBlock(playerLeft, enemyLeft)) {
+      if (playerTop === enemyTop && playerLeft === enemyLeft) {
+        if (hasSword) {
+          health -= 10;
+          healthBar.updateHealth(health);
+          gridElement.removeChild(enemy);
+          enemies.splice(i, 1);
+          enemy.style.opacity = 0;
+          enemy.style.display = "none";
+          var audio = new Audio("sounds/Sword-Effect.mp3");
+          audio.play();
+        } else {
+          health -= 30;
+          healthBar.updateHealth(health);
+          gridElement.removeChild(enemy);
+          enemies.splice(i, 1);
+          enemy.style.opacity = 0;
+          enemy.style.display = "none";
+          var audio = new Audio("sounds/Damage.mp3");
+          audio.play();
 
-            if (health <= 10) {
-              health -= 10;
-              enemies.splice(i, 2);
-              var audio = new Audio("sounds/Died.mp3");
-              audio.play();
-              healthBar.updateHealth(health);
-            }
-            if (enemies <= 0) {
-              alert(
-                "Победа \nНажмите «ОК» и подождите, чтобы перезапустить игру. \nЕсли игра не загружается, нажмите еще раз."
-              );
-              location.reload();
-              window.location.href = "index.html";
-            }
+          if (health <= 10) {
+            health -= 10;
+            var audio = new Audio("sounds/Died.mp3");
+            audio.play();
+            healthBar.updateHealth(health);
           }
+        }
+
+        if (enemies.length <= 0) {
+          var audio = new Audio("sounds/Party.mp3");
+          audio.play();
+          setTimeout(() => {
+            alert(
+              "Победа \nНажмите «ОК» и подождите, чтобы перезапустить игру. \nЕсли игра не загружается, нажмите еще раз."
+            );
+            location.reload();
+            window.location.href = "index.html";
+          }, 100);
         }
       }
     }
@@ -172,15 +166,43 @@ function checkCollision() {
       gridElement.removeChild(sword);
       swords.splice(i, 1);
       hasSword = true;
-      console.log("Has a sword:", hasSword);
-
-      setTimeout(() => {
+      clearTimeout(swordTimeout);
+      swordTimeout = setTimeout(() => {
         hasSword = false;
         player.style.backgroundColor = "black";
-        console.log("Has a sword:", hasSword);
       }, 8000);
+      console.log("Has a sword:", hasSword);
     }
   }
 }
+
+function handleSwordAttack(event) {
+  if (event.key === " " && hasSword) {
+    for (let i = 0; i < enemies.length; i++) {
+      const enemy = enemies[i];
+      const enemyTop = parseInt(enemy.style.top);
+      const enemyLeft = parseInt(enemy.style.left);
+      const player = document.querySelector(".player");
+      const playerTop = parseInt(player.style.top);
+      const playerLeft = parseInt(player.style.left);
+
+      if (
+        Math.abs(playerTop - enemyTop) <= cellSize &&
+        Math.abs(playerLeft - enemyLeft) <= cellSize
+      ) {
+        gridElement.removeChild(enemy);
+        enemies.splice(i, 1);
+        enemy.style.opacity = 0;
+        enemy.style.display = "none";
+        var audio = new Audio("sounds/Sword-Effect.mp3");
+        audio.play();
+        console.log("gg", hasSword);
+        break;
+      }
+    }
+  }
+}
+document.addEventListener("keydown", handleSwordAttack);
+
 
 addPlayer();

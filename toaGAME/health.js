@@ -11,7 +11,7 @@ class HealthBar {
   }
 
   show(health) {
-    health.lineWidth = 5;
+    health.lineWidth = 4;
     health.strokeStyle = "black";
     health.fillStyle = this.color;
     health.fillRect(this.x, this.y, this.w, this.h);

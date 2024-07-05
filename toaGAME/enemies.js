@@ -2,9 +2,8 @@ function addEnemies() {
   for (let i = 0; i < 10; i++) {
     const enemy = document.createElement("div");
     enemy.className = "enemies";
-    enemy.style.backgroundImage =
-      "url('images/pixel-art-cute-monster-character-2-png.png')";
-    enemy.style.backgroundSize = "cover";
+    enemy.style.backgroundImage = "url('images/enemy.png')";
+    enemy.style.backgroundSize = "contain";
 
     let newRow, newCol;
     do {
