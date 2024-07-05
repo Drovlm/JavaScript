@@ -128,7 +128,7 @@ function checkCollision() {
             );
             location.reload();
             window.location.href = "index.html";
-          }, 100);
+          }, 400);
         }
       }
     }
