@@ -93,7 +93,7 @@ function checkCollision() {
     if (isWithinOneBlock(playerTop, enemyTop) && isWithinOneBlock(playerLeft, enemyLeft)) {
       if (playerTop === enemyTop && playerLeft === enemyLeft) {
         if (hasSword) {
-          health -= 10;
+          health -= 5;
           healthBar.updateHealth(health);
           gridElement.removeChild(enemy);
           enemies.splice(i, 1);
