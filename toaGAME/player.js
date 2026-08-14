@@ -1,3 +1,75 @@
+let hasSword = false;
+let swordTimeout = null; 
+
+// NEW FUNCTION: Dynamically generates an in-game styled Restart Overlay screen
+function showGameOverScreen(message, isVictory) {
+  // Prevent adding duplicate screens if one is already open
+  if (document.getElementById("game-over-overlay")) return;
+
+  const overlay = document.createElement("div");
+  overlay.id = "game-over-overlay";
+  
+  // Custom styles injected to fit perfectly on top of your 1000px centered tile board
+  Object.assign(overlay.style, {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.85)",
+    zIndex: "999",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    color: "#fff",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+  });
+
+  const heading = document.createElement("h1");
+  heading.innerText = message;
+  heading.style.fontSize = "36px";
+  heading.style.marginBottom = "20px";
+  heading.style.color = isVictory ? "#4CAF50" : "#F44336"; // Green for win, Red for loss
+  heading.style.textShadow = "0 0 10px rgba(255,255,255,0.2)";
+
+  const subtitle = document.createElement("p");
+  subtitle.innerText = "Click the button below to restart the match.";
+  subtitle.style.marginBottom = "30px";
+  subtitle.style.fontSize = "16px";
+  subtitle.style.color = "#ccc";
+
+  const restartBtn = document.createElement("button");
+  restartBtn.innerText = "RESTART GAME";
+  Object.assign(restartBtn.style, {
+    padding: "12px 30px",
+    fontSize: "18px",
+    fontWeight: "bold",
+    backgroundColor: isVictory ? "#4CAF50" : "#F44336",
+    color: "#white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.4)",
+    transition: "transform 0.1s ease"
+  });
+
+  // Smooth hover effects via JavaScript attributes
+  restartBtn.onmouseover = () => restartBtn.style.transform = "scale(1.05)";
+  restartBtn.onmouseout = () => restartBtn.style.transform = "scale(1)";
+  
+  restartBtn.addEventListener("click", () => {
+    location.reload();
+  });
+
+  overlay.appendChild(heading);
+  overlay.appendChild(subtitle);
+  overlay.appendChild(restartBtn);
+  
+  // Appends cleanly over your parent map node container
+  gridElement.appendChild(overlay);
+}
+
 function addPlayer() {
   const player = document.createElement("div");
   player.className = "player";
@@ -15,148 +87,120 @@ function addPlayer() {
   gridElement.appendChild(player);
 
   document.addEventListener("keydown", (event) => {
+    // Stop character controls completely if a game over layout is active
+    if (document.getElementById("game-over-overlay")) return;
+
+    let currentRow = Math.round(parseInt(player.style.top) / cellSize);
+    let currentCol = Math.round(parseInt(player.style.left) / cellSize);
+    
     switch (event.key) {
       case "ArrowUp":
       case "w":
       case "W":
-        if (player.offsetTop > 0) {
-          const newRow = Math.floor((player.offsetTop - 25) / cellSize);
-          const newCol = Math.floor(player.offsetLeft / cellSize);
-          if (map[newRow][newCol] !== "w") {
-            player.style.top = `${Math.max(0, newRow * cellSize)}px`;
-            checkCollision();
-          }
+        if (currentRow > 0 && map[currentRow - 1][currentCol] !== "w") {
+          player.style.top = `${(currentRow - 1) * cellSize}px`;
+          checkCollision();
         }
         break;
       case "ArrowDown":
       case "s":
       case "S":
-        if (player.offsetTop < gridElement.clientHeight - player.clientHeight) {
-          const newRow = Math.floor((player.offsetTop + 25) / cellSize);
-          const newCol = Math.floor(player.offsetLeft / cellSize);
-          if (map[newRow][newCol] !== "w") {
-            player.style.top = `${Math.min(
-              gridElement.clientHeight - player.clientHeight,
-              newRow * cellSize
-            )}px`;
-            checkCollision();
-          }
+        if (currentRow < map.length - 1 && map[currentRow + 1][currentCol] !== "w") {
+          player.style.top = `${(currentRow + 1) * cellSize}px`;
+          checkCollision();
         }
         break;
       case "ArrowLeft":
       case "a":
       case "A":
-        if (player.offsetLeft > 0) {
-          const newRow = Math.floor(player.offsetTop / cellSize);
-          const newCol = Math.floor((player.offsetLeft - 25) / cellSize);
-          if (map[newRow][newCol] !== "w") {
-            player.style.left = `${Math.max(0, newCol * cellSize)}px`;
-            checkCollision();
-          }
+        if (currentCol > 0 && map[currentRow][currentCol - 1] !== "w") {
+          player.style.left = `${(currentCol - 1) * cellSize}px`;
+          checkCollision();
         }
         break;
       case "ArrowRight":
       case "d":
       case "D":
-        if (player.offsetLeft < gridElement.clientWidth - player.clientWidth) {
-          const newRow = Math.floor(player.offsetTop / cellSize);
-          const newCol = Math.floor((player.offsetLeft + 25) / cellSize);
-          if (map[newRow][newCol] !== "w") {
-            player.style.left = `${Math.min(
-              gridElement.clientWidth - player.clientWidth,
-              newCol * cellSize
-            )}px`;
-            checkCollision();
-          }
+        if (currentCol < map[0].length - 1 && map[currentRow][currentCol + 1] !== "w") {
+          player.style.left = `${(currentCol + 1) * cellSize}px`;
+          checkCollision();
         }
         break;
     }
   });
 }
-let hasSword = false;
-let swordTimeout = null; 
+
 function checkCollision() {
   const player = document.querySelector(".player");
+  if (!player) return;
+
   const playerTop = parseInt(player.style.top);
   const playerLeft = parseInt(player.style.left);
 
-  function isWithinOneBlock(pos1, pos2) {
-    return Math.abs(pos1 - pos2) <= cellSize;
-  }
-
-  
-  for (let i = 0; i < enemies.length; i++) {
+  for (let i = enemies.length - 1; i >= 0; i--) {
     const enemy = enemies[i];
     const enemyTop = parseInt(enemy.style.top);
     const enemyLeft = parseInt(enemy.style.left);
 
-    if (isWithinOneBlock(playerTop, enemyTop) && isWithinOneBlock(playerLeft, enemyLeft)) {
-      if (playerTop === enemyTop && playerLeft === enemyLeft) {
-        if (hasSword) {
-          health -= 5;
-          healthBar.updateHealth(health);
-          gridElement.removeChild(enemy);
-          enemies.splice(i, 1);
-          enemy.style.opacity = 0;
-          enemy.style.display = "none";
-          var audio = new Audio("sounds/Sword-Effect.mp3");
-          audio.play();
-        } else {
-          health -= 30;
-          healthBar.updateHealth(health);
-          gridElement.removeChild(enemy);
-          enemies.splice(i, 1);
-          enemy.style.opacity = 0;
-          enemy.style.display = "none";
-          var audio = new Audio("sounds/Damage.mp3");
-          audio.play();
+    if (playerTop === enemyTop && playerLeft === enemyLeft) {
+      if (hasSword) {
+        health -= 5;
+        healthBar.updateHealth(health);
+        gridElement.removeChild(enemy);
+        enemies.splice(i, 1);
+        var audio = new Audio("sounds/Sword-Effect.mp3");
+        audio.play();
+      } else {
+        health -= 30;
+        healthBar.updateHealth(health);
+        gridElement.removeChild(enemy);
+        enemies.splice(i, 1);
+        var audio = new Audio("sounds/Damage.mp3");
+        audio.play();
+      }
 
-          if (health <= 10) {
-            health -= 10;
-            var audio = new Audio("sounds/Died.mp3");
-            audio.play();
-            healthBar.updateHealth(health);
-          }
-        }
+      // FIXED: Swapped out old alerts for smooth overlay call parameters
+      if (health <= 0) {
+        var audioDied = new Audio("sounds/Died.mp3");
+        audioDied.play();
+        setTimeout(() => {
+          showGameOverScreen("Game Over! You Died.", false);
+        }, 200);
+        return; 
+      }
 
-        if (enemies.length <= 0) {
-          var audio = new Audio("sounds/Party.mp3");
-          audio.play();
-          setTimeout(() => {
-            alert(
-              "Победа \nНажмите «ОК» и подождите, чтобы перезапустить игру. \nЕсли игра не загружается, нажмите еще раз."
-            );
-            location.reload();
-            window.location.href = "index.html";
-          }, 400);
-        }
+      // FIXED: Victory condition now triggers customized non-blocking display screens
+      if (enemies.length <= 0) {
+        var audioWin = new Audio("sounds/Party.mp3");
+        audioWin.play();
+        setTimeout(() => {
+          showGameOverScreen("Victory! Map Cleared.", true);
+        }, 400);
+        return;
       }
     }
   }
 
-  for (const i in bandages) {
+  for (let i = bandages.length - 1; i >= 0; i--) {
     const bandage = bandages[i];
     const bandageTop = parseInt(bandage.style.top);
     const bandageLeft = parseInt(bandage.style.left);
 
     if (playerTop === bandageTop && playerLeft === bandageLeft) {
-      if (health == 100) {
-        health += 0;
-        healthBar.updateHealth(health);
-      } else {
-        health += 15;
+      if (health < 100) {
+        health = Math.min(100, health + 15);
         healthBar.updateHealth(health);
         gridElement.removeChild(bandage);
-        enemies.splice(i, 1);
+        bandages.splice(i, 1);
+
         var audio = new Audio("sounds/GetHeal.mp3");
         audio.play();
         audio.volume = 0.4;
-        bandages.splice(i, 1);
       }
     }
   }
 
-  for (let i = 0; i < swords.length; i++) {
+  for (let i = swords.length - 1; i >= 0; i--) {
     const sword = swords[i];
     const swordTop = parseInt(sword.style.top);
     const swordLeft = parseInt(sword.style.left);
@@ -166,25 +210,30 @@ function checkCollision() {
       gridElement.removeChild(sword);
       swords.splice(i, 1);
       hasSword = true;
+      
       clearTimeout(swordTimeout);
       swordTimeout = setTimeout(() => {
         hasSword = false;
-        player.style.backgroundColor = "black";
+        player.style.backgroundColor = ""; 
       }, 8000);
-      console.log("Has a sword:", hasSword);
     }
   }
 }
 
 function handleSwordAttack(event) {
+  if (document.getElementById("game-over-overlay")) return; // blocks attack actions post-game
+
   if (event.key === " " && hasSword) {
-    for (let i = 0; i < enemies.length; i++) {
+    const player = document.querySelector(".player");
+    if (!player) return;
+
+    const playerTop = parseInt(player.style.top);
+    const playerLeft = parseInt(player.style.left);
+
+    for (let i = enemies.length - 1; i >= 0; i--) {
       const enemy = enemies[i];
       const enemyTop = parseInt(enemy.style.top);
       const enemyLeft = parseInt(enemy.style.left);
-      const player = document.querySelector(".player");
-      const playerTop = parseInt(player.style.top);
-      const playerLeft = parseInt(player.style.left);
 
       if (
         Math.abs(playerTop - enemyTop) <= cellSize &&
@@ -192,17 +241,13 @@ function handleSwordAttack(event) {
       ) {
         gridElement.removeChild(enemy);
         enemies.splice(i, 1);
-        enemy.style.opacity = 0;
-        enemy.style.display = "none";
         var audio = new Audio("sounds/Sword-Effect.mp3");
         audio.play();
-        console.log("gg", hasSword);
-        break;
+        break; 
       }
     }
   }
 }
+
 document.addEventListener("keydown", handleSwordAttack);
-
-
 addPlayer();

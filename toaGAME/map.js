@@ -7,7 +7,7 @@ const imageSrcMap = {
 const map = [
   "wwwwwwpwwwwwwpwppppppwwppppwwpppwwwwwwww",
   "wwwwwwpwwwwwwpwppppppwwppppwwpppwwwwwwww",
-  "wwwwwwpwwwwwwpwppppppwwwwwwwwwwwwwwwwwww",
+  "wwwwwwpwwwwwwpwppppppwwwppwwwppwwwwwwwww",
   "pppppppppppppppppppppppppppppppppppppppp",
   "wwwwwwppppwwwppppwwwppwwwpwwwpppppwwwwww",
   "wwwwwwppppwwwppppwwwppwwwpwwwpppppwwwwww",

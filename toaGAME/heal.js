@@ -17,13 +17,7 @@ const frame = function() {
   healthBar.show(context);
   requestAnimationFrame(frame);
 }
-setInterval(function() {
-    if (health <= 0) {
-      alert("Game Over! \nClick 'Ok' and wait to restart the game \nIf it doesn't reload, please click again.");
-      location.reload();
-      window.location.href = "index.html"; 
-    }
-  } ,1000);
+
 /*
   setInterval(function() {
     if (health <= 0) {

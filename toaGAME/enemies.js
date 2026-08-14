@@ -1,4 +1,6 @@
 function addEnemies() {
+  enemies = []; 
+
   for (let i = 0; i < 10; i++) {
     const enemy = document.createElement("div");
     enemy.className = "enemies";
@@ -21,42 +23,47 @@ function addEnemies() {
 }
 
 function moveRandomly(enemy) {
-  setInterval(() => {
-    let newRow, newCol;
-    do {
-      const direction = Math.floor(Math.random() * 4);
-      const currentTop = parseInt(enemy.style.top);
-      const currentLeft = parseInt(enemy.style.left);
-      switch (direction) {
-        case 0:
-          newRow = currentTop / cellSize - 1;
-          newCol = currentLeft / cellSize;
-          break;
-        case 1:
-          newRow = currentTop / cellSize + 1;
-          newCol = currentLeft / cellSize;
-          break;
-        case 2:
-          newRow = currentTop / cellSize;
-          newCol = currentLeft / cellSize - 1;
-          break;
-        case 3:
-          newRow = currentTop / cellSize;
-          newCol = currentLeft / cellSize + 1;
-          break;
-      }
-    } while (
-      newRow < 0 ||
-      newRow >= map.length ||
-      newCol < 0 ||
-      newCol >= map[0].length ||
-      map[newRow][newCol] === "w"
-    );
+  const moveInterval = setInterval(() => {
 
-    enemy.style.top = `${newRow * cellSize}px`;
-    enemy.style.left = `${newCol * cellSize}px`;
-    checkCollision();
-  }, 500);
+    if (!enemies.includes(enemy)) {
+      clearInterval(moveInterval);
+      return;
+    }
+
+    const currentTop = parseInt(enemy.style.top);
+    const currentLeft = parseInt(enemy.style.left);
+    const currentRow = Math.round(currentTop / cellSize);
+    const currentCol = Math.round(currentLeft / cellSize);
+
+    const possibleMoves = [
+      { row: currentRow - 1, col: currentCol }, 
+      { row: currentRow + 1, col: currentCol },
+      { row: currentRow, col: currentCol - 1 },
+      { row: currentRow, col: currentCol + 1 }
+    ];
+
+    const validMoves = possibleMoves.filter(move => {
+      return (
+        move.row >= 0 &&
+        move.row < map.length &&
+        move.col >= 0 &&
+        move.col < map[0].length &&
+        map[move.row][move.col] !== "w"
+      );
+    });
+
+    if (validMoves.length > 0) {
+     
+      const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+      
+      enemy.style.top = `${randomMove.row * cellSize}px`;
+      enemy.style.left = `${randomMove.col * cellSize}px`;
+
+      if (typeof checkCollision === "function") {
+        checkCollision();
+      }
+    }
+  }, 550);
 }
 
 addEnemies();
